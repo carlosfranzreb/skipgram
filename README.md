@@ -17,3 +17,5 @@ Give a batch size _N_, the input and output indices should be 1D tensors of size
 The authors recommend _k_ to  be between as low as 2 for large datasets, and as large as 20 for smaller ones.
 
 The forward method returns the score of the input-output pair, considering the negative samples. The higher the score is, the more likely it is that the output word can be found near the input word in the data.
+
+The model only considers one context word for each center word. Usually you will want to consider multiple context words for each center words. To do so, just feed the model the input word paired with different words.
