@@ -1,5 +1,4 @@
-""" Implementation of the Skip-gram model with neg. sampling and undersampling
-of frequent words. """
+""" Implementation of the Skip-gram model with neg. sampling. """
 
 
 import torch
