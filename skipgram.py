@@ -22,7 +22,7 @@ class Skipgram(nn.Module):
     """ Computes the forward pass.
     input_idx (tensor of size N): indices of the center words.
     output_idx (tensor of size N): indices of the context words.
-    neg_idx (tensor of size (Nxk)): indices of negative samples.
+    neg_idx (tensor of size (N x k)): indices of negative samples.
     * N is the batch size.
     * k is the no. of neg. samples per input-output pair.
     """
