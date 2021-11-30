@@ -20,11 +20,9 @@ class Skipgram(nn.Module):
     self.output_vectors = nn.Embedding(n_words, n_dims)
 
   def forward(self, input_idx, output_idx, neg_idx):
-    in_vecs = self.input_vectors(input_idx)
-    out_vecs = self.output_vectors(output_idx)
-    neg_vecs = -self.output_vectors(neg_idx)
-    prob = F.logsigmoid(torch.mm(in_vecs, out_vecs.T))
-    noise = F.logsigmoid(torch.bmm(
-      in_vecs.unsqueeze(1), neg_vecs.transpose(1, 2)
-    ).squeeze()).sum(dim=1)
-    return prob + noise
+    in_vecs = self.input_vectors(input_idx).unsqueeze(1)
+    out_vecs = self.output_vectors(output_idx).unsqueeze(2)
+    neg_vecs = -self.output_vectors(neg_idx).transpose(1, 2)
+    prob = torch.bmm(in_vecs, out_vecs).squeeze()
+    noise = torch.bmm(in_vecs, neg_vecs).squeeze()
+    return F.logsigmoid(prob) + F.logsigmoid(noise).sum(dim=1)
