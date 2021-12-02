@@ -4,7 +4,8 @@
 import torch
 from torch import nn
 import torch.nn.functional as F
-from skipgram import Skipgram
+
+from ..model import Skipgram
 
 
 def test_forward():
