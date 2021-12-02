@@ -2,6 +2,8 @@
 
 Implementation of the Skip-gram model, as detailed in the paper _Distributed Representations of Words and Phrases and their Compositionality_, by Tomas Mikolov. This is the extended version, which includes negative sampling and subsampling of frequent words.
 
+You can learn about the expected behavior of the scripts by looking at the tests, located in the `tests` folder. They include simple examples that illustrate how the classes work.
+
 ## The model
 
 When initialized, it receives as inputs the size of the vocabulary and the number of dimensions each vector representation should have. These are used to initialize the [embeddings](https://pytorch.org/docs/stable/generated/torch.nn.Embedding.html).
