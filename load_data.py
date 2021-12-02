@@ -54,10 +54,7 @@ class Dataset(IterableDataset):
     else:
       if center_idx > self.window:  # left context is full
         self.context.pop(0)  # remove left-most word
-        if center_idx == len(self.sentence)-1:
-          self.context[-1] = self.center
-        else:  # replace new center with old
-          self.context[self.window] = self.center
+        self.context[self.window-1] = self.center  # replace new center with old
       else:  # left context is not full; removal not necessary
         self.context[center_idx-1] = self.center  # insert old center
       if center_idx < len(self.sentence) - self.window:  # update right context      
