@@ -24,3 +24,7 @@ class Vocab:
   def get_freq(self, word):
     """ Return the frequency of the given word. """
     return self.vocab[word]
+  
+  def get_n_words(self):
+    """ Return the number of words in the vocabulary. """
+    return len(self.entries)
