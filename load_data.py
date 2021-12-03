@@ -45,7 +45,8 @@ class Dataset(IterableDataset):
   
   def __iter__(self):
     while self.sentence is not None:
-      yield [(self.center.vocab_idx, c.vocab_idx) for c in self.context]
+      for c in self.context:
+        yield (self.center.vocab_idx, c.vocab_idx)
       self.step()
   
   def step(self):
