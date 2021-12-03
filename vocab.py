@@ -12,6 +12,7 @@ class Vocab:
     in the dictionary. """
     self.vocab = json.load(open(vocab_file))
     self.entries = list(self.vocab.keys())
+    self.n_words = len(self.entries)  # number of words in the vocabulary
   
   def get_idx(self, word):
     """ Return the index of the word in the vocabulary. """
@@ -24,7 +25,3 @@ class Vocab:
   def get_freq(self, word):
     """ Return the frequency of the given word. """
     return self.vocab[word]
-  
-  def get_n_words(self):
-    """ Return the number of words in the vocabulary. """
-    return len(self.entries)
