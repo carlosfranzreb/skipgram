@@ -2,7 +2,7 @@
 here. This class is an argument for PyTorch's DataLoader. """
 
 
-from random import random
+from random import random, sample
 from torch.utils.data import IterableDataset
 
 from vocab import Vocab
@@ -10,19 +10,21 @@ from word import Word
 
 
 class Dataset(IterableDataset):
-  def __init__(self, vocab_file, data_file, window=2, discard_t=10**-5):
+  def __init__(self, vocab_file, data_file, k=15, w=2, t=10**-5):
     """ Initializes the dataset object, which is fed to PyTorch's DataLoader.
     vocab_file (str): refers to a JSON file with the vocab. Used to initialize
       the Vocab class.
     data_file (str): refers to a TXT file with one sentence per line.
+    n_neg (int): no. of negative samples.
     window (int): no. of words (forwards and backwards) that form the context
     of a center word. They must belong to the same sentence as the center word.
     discard_t (float): threshold used to subsample frequent words.
     """
     self.vocab = Vocab(vocab_file)
     self.data = open(data_file, encoding='utf-8')
-    self.window = window
-    self.discard_t = discard_t
+    self.n_neg = k
+    self.window = w
+    self.discard_t = t
     self.get_sentence()
   
   def get_sentence(self):
@@ -45,8 +47,12 @@ class Dataset(IterableDataset):
   
   def __iter__(self):
     while self.sentence is not None:
+      neg_samples = self.sample(
+        [self.center.vocab_idx] + [c.vocab_idx for c in self.context]
+      )
       for c in self.context:
-        yield (self.center.vocab_idx, c.vocab_idx)
+        yield (self.center.vocab_idx, c.vocab_idx, neg_samples[:self.n_neg])
+        neg_samples = neg_samples[:self.n_neg]
       self.step()
   
   def step(self):
@@ -75,3 +81,9 @@ class Dataset(IterableDataset):
     if random() > prob:
       return True
     return False
+  
+  def sample(self, exclude):
+    """ Sample 'n_neg' indices from the vocab. Exclude those present in the
+    list 'exclude'. The resulting indices are the negative samples. """
+    population = set(range(self.vocab.n_words)) - set(exclude)
+    return sample(population, self.n_neg * self.window * 2)

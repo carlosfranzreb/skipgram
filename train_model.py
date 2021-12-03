@@ -16,8 +16,10 @@ def train(model, dataset, batch_size):
 if __name__ == '__main__':
   dataset = Dataset(
     'tests/data/full/vocab.json',
-    'tests/data/full/data.txt'
+    'tests/data/full/data.txt',
+    k=1,
+    w=1
   )
-  n_words = dataset.vocab.get_n_words()
+  n_words = dataset.vocab.n_words
   model = Skipgram(n_words, 3)
   train(model, dataset, 4)
