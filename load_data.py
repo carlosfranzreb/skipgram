@@ -1,4 +1,5 @@
-""" Lazily iterate over the data. """
+""" Lazily iterate over the data. The subsampling of frequent words occurs
+here. This class is an argument for PyTorch's DataLoader. """
 
 
 from random import random
