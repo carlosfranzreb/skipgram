@@ -20,3 +20,7 @@ class Vocab:
   def get_word(self, idx):
     """ Return the word in the vocabulary at the given index. """
     return self.entries[idx]
+  
+  def get_freq(self, word):
+    """ Return the frequency of the given word. """
+    return self.vocab[word]

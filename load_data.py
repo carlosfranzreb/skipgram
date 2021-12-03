@@ -1,6 +1,7 @@
 """ Lazily iterate over the data. """
 
 
+from random import random
 from torch.utils.data import IterableDataset
 
 from vocab import Vocab
@@ -8,19 +9,20 @@ from word import Word
 
 
 class Dataset(IterableDataset):
-  def __init__(self, vocab_file, data_file, window=2):
+  def __init__(self, vocab_file, data_file, window=2, discard_t=10**-5):
     """ Initializes the dataset object, which is fed to PyTorch's DataLoader.
     vocab_file (str): refers to a JSON file with the vocab. Used to initialize
       the Vocab class.
     data_file (str): refers to a TXT file with one sentence per line.
-    context (int): no. of words (forwards and backwards) that form the context
+    window (int): no. of words (forwards and backwards) that form the context
     of a center word. They must belong to the same sentence as the center word.
+    discard_t (float): threshold used to subsample frequent words.
     """
     self.vocab = Vocab(vocab_file)
     self.data = open(data_file, encoding='utf-8')
     self.window = window
+    self.discard_t = discard_t
     self.get_sentence()
-
   
   def get_sentence(self):
     """ Read a line from the file and store its words as a list. Set the index
@@ -60,3 +62,14 @@ class Dataset(IterableDataset):
       if center_idx < len(self.sentence) - self.window:  # update right context      
         self.context.append(self.sentence[center_idx + self.window])
       self.center = self.sentence[center_idx]  # update center
+      if self.discard(self.center.word):
+        self.step()
+
+  def discard(self, word):
+    """ Discard sample with a probability 1 - sqrt(t/f(w)), where t is a
+    threshold defined in init and f(w) is the frequency of the word w. """
+    freq = self.vocab.get_freq(word)
+    prob = 1 - (self.discard_t/freq)**.5
+    if random() > prob:
+      return True
+    return False
