@@ -9,10 +9,14 @@ from load_data import Dataset
 def test_full():
   """ Given a small dataset and its corresponding vocabulary, run the whole
   procedure. The data as well as the expected result is in the data folder. """
-  dataset = Dataset('tests/data/full/vocab.json', 'tests/data/full/data.txt')
+  dataset = Dataset(
+    'tests/data/full/vocab.json',
+    'tests/data/full/data.txt',
+    k=0
+  )
   results = json.load(open('tests/data/full/results.json'))
-  for data in dataset:
-    assert str(data) == results.pop(0)
+  for x, y, neg in dataset:
+    assert str((x, y)) == results.pop(0)
 
 
 def test_long():
@@ -20,8 +24,10 @@ def test_long():
   dataset = Dataset(
     'tests/data/long/vocab.json', 
     'tests/data/long/data.txt',
-    window=3
+    w=3,
+    k=0
   )
   results = json.load(open('tests/data/long/results.json'))
-  for data in dataset:
-    assert str(data) == results.pop(0)
+  for x, y, neg in dataset:
+    assert str((x, y)) == results.pop(0)
+
