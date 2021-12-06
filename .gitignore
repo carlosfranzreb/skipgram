@@ -1,1 +1,3 @@
 *.pyc
+embeddings/*
+embeddings/!.gitignore
