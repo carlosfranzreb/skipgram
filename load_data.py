@@ -3,7 +3,9 @@ here. This class is an argument for PyTorch's DataLoader. """
 
 
 from random import random, sample
+
 from torch.utils.data import IterableDataset
+from torch import LongTensor
 
 from vocab import Vocab
 from word import Word
@@ -37,7 +39,7 @@ class Dataset(IterableDataset):
       words = line.replace('\n', '').split(' ')
       self.sentence = [self.get_word(words, i) for i in range(len(words))]
       self.center = self.sentence[0]  # center starts at the first word
-      until = self.window+1 if len(self.sentence) > self.window else len(self.sentence)
+      until = self.window+1 if len(words) > self.window else len(words)
       self.context = [self.sentence[i] for i in range(1, until)]
   
   def get_word(self, sentence, idx):
@@ -51,8 +53,9 @@ class Dataset(IterableDataset):
         [self.center.vocab_idx] + [c.vocab_idx for c in self.context]
       )
       for c in self.context:
-        yield (self.center.vocab_idx, c.vocab_idx, neg_samples[:self.n_neg])
-        neg_samples = neg_samples[:self.n_neg]
+        this = neg_samples[:self.n_neg]
+        neg_samples = neg_samples[self.n_neg:]
+        yield (self.center.vocab_idx, c.vocab_idx, LongTensor(this))
       self.step()
   
   def step(self):
