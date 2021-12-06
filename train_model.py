@@ -3,7 +3,10 @@
 
 import logging
 from time import time
+import os
+import json
 
+import torch
 from torch.utils.data import DataLoader
 from torch.optim import SparseAdam
 from torch.nn.utils import clip_grad_norm_
@@ -13,22 +16,23 @@ from model import Skipgram
 
 
 class ModelTrainer:
-  def __init__(self, run_id, model, loader):
+  def __init__(self, run_id, model, dataset):
     """ Initialize the trainer. 
     run_id (int): ID of this training run; used to save embeddings.
     model (torch.nn): model to be trained.
-    loader (torch's DataLoader): loader to be used. """
+    dataset (torch's Dataset): dataset to be used. """
     self.run_id = run_id
     self.model = model
-    self.loader = loader
+    self.dataset = dataset
 
-  def train(self, n_epochs=5, lr=.002):
+  def train(self, batch_size=32, n_epochs=5, lr=.002):
     optimizer = SparseAdam(self.model.parameters(), lr=lr)
     for epoch in range(n_epochs+1):
+      loader = DataLoader(self.dataset, batch_size=batch_size)
       self.cnt, self.current_loss = 0, 0  # for last 100 batches
       self.epoch_cnt, self.epoch_loss = 0, 0  # for epoch
       logging.info(f'Starting epoch {epoch+1}')
-      for batch in self.loader:
+      for batch in loader:
         optimizer.zero_grad()
         loss = self.model(*batch)
         loss.backward()
@@ -53,11 +57,16 @@ class ModelTrainer:
     logging.info(f'Avg. loss in the last 100 batches: {avg_loss}')
   
   def save_embeddings(self, epoch):
-    """ Save the embeddings of the model. The file should be named
-    'embeddings_{run_id}_{epoch}'. """
-    file = f'embeddings_{self.run_id}_{epoch}.vec'
-    # TODO: save embeddings
-
+    """ Save the embeddings of the model as a dict with the words as keys and
+    the embeddings as values. The file should be named
+    'epoch_{epoch}', in the 'run_id' folder. """
+    folder = f'embeddings/{self.run_id}'
+    if not os.path.exists(folder):
+      os.makedir(folder)
+    if not os.path.exists(f'{folder}/entries.json'):
+      json.dump(self.dataset.vocab.entries, open(f'{folder}/entries.json', 'w'))
+    torch.save(self.model.state_dict(), f'{folder}/epoch_{epoch}.pt')
+      
 
 def init_training(run_id, vocab_file, data_file, neg_samples, window,
     batch_size, n_dims):
