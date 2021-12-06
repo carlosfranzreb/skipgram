@@ -34,16 +34,10 @@ def test_long():
 
 def test_negsamples():
   """ Ensure that the no. of neg. samples corresponds to the parameter k. """
-  dataset = Dataset(
-    'tests/data/full/vocab.json', 'tests/data/full/data.txt',
-    k=1, w=1
-  )
-  for x, y, neg in dataset:
-    assert neg.size(0)== 1
-
-  dataset = Dataset(
-    'tests/data/full/vocab.json', 'tests/data/full/data.txt',
-    k=2, w=1
-  )
-  for x, y, neg in dataset:
-    assert neg.size(0)== 2
+  for k in [0, 1, 2]:
+    dataset = Dataset(
+      'tests/data/full/vocab.json', 'tests/data/full/data.txt',
+      k=k, w=1
+    )
+    for x, y, neg in dataset:
+      assert neg.size(0)== k
