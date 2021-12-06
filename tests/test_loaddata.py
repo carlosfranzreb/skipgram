@@ -15,7 +15,7 @@ def test_full():
     k=0
   )
   results = json.load(open('tests/data/full/results.json'))
-  for x, y, neg in dataset:
+  for x, y, _ in dataset:
     assert str((x, y)) == results.pop(0)
 
 
@@ -28,6 +28,22 @@ def test_long():
     k=0
   )
   results = json.load(open('tests/data/long/results.json'))
-  for x, y, neg in dataset:
+  for x, y, _ in dataset:
     assert str((x, y)) == results.pop(0)
 
+
+def test_negsamples():
+  """ Ensure that the no. of neg. samples corresponds to the parameter k. """
+  dataset = Dataset(
+    'tests/data/full/vocab.json', 'tests/data/full/data.txt',
+    k=1, w=1
+  )
+  for x, y, neg in dataset:
+    assert neg.size(0)== 1
+
+  dataset = Dataset(
+    'tests/data/full/vocab.json', 'tests/data/full/data.txt',
+    k=2, w=1
+  )
+  for x, y, neg in dataset:
+    assert neg.size(0)== 2
