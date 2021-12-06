@@ -7,19 +7,20 @@ from load_data import Dataset
 from model import Skipgram
 
 
-def train(model, dataset, batch_size):
+def train(model, dataset, batch_size=32):
   loader = DataLoader(dataset, batch_size=batch_size)
   for sample in loader:
-    print(sample)
+    out = model.forward(*sample)
+    print(out.size())
 
 
 if __name__ == '__main__':
   dataset = Dataset(
     'tests/data/full/vocab.json',
     'tests/data/full/data.txt',
-    k=1,
+    k=2,
     w=1
   )
   n_words = dataset.vocab.n_words
   model = Skipgram(n_words, 3)
-  train(model, dataset, 4)
+  train(model, dataset, batch_size=4)
