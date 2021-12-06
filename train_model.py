@@ -1,26 +1,93 @@
 """ Train the skip-gram model. """
 
 
+import logging
+from time import time
+
 from torch.utils.data import DataLoader
+from torch.optim import SparseAdam
+from torch.nn.utils import clip_grad_norm_
 
 from load_data import Dataset
 from model import Skipgram
 
 
-def train(model, dataset, batch_size=32):
+class ModelTrainer:
+  def __init__(self, run_id, model, loader):
+    """ Initialize the trainer. 
+    run_id (int): ID of this training run; used to save embeddings.
+    model (torch.nn): model to be trained.
+    loader (torch's DataLoader): loader to be used. """
+    self.run_id = run_id
+    self.model = model
+    self.loader = loader
+
+  def train(self, n_epochs=5, lr=.002):
+    optimizer = SparseAdam(self.model.parameters(), lr=lr)
+    for epoch in range(n_epochs+1):
+      self.cnt, self.current_loss = 0, 0  # for last 100 batches
+      self.epoch_cnt, self.epoch_loss = 0, 0  # for epoch
+      logging.info(f'Starting epoch {epoch+1}')
+      for batch in self.loader:
+        optimizer.zero_grad()
+        loss = self.model(*batch)
+        loss.backward()
+        clip_grad_norm_(self.model.parameters(), max_norm=5)
+        optimizer.step()
+        self.cnt += 1
+        self.current_loss += loss
+        if self.cnt % 100 == 0:
+          self.log_loss()
+      avg_loss = self.epoch_loss / self.epoch_cnt
+      logging.info(f'Avg. loss of epoch {n_epochs+1}: {avg_loss}')
+      self.save_embeddings()
+  
+  def log_loss(self):
+    """ Log avg. loss of the last 100 batches. Before resetting the cnt and
+    current_loss, add them to the totals for the epoch. """
+    avg_loss = self.current_loss / self.cnt
+    self.epoch_loss += self.current_loss
+    self.epoch_cnt += self.cnt
+    self.cnt = 0
+    self.current_loss = 0
+    logging.info(f'Avg. loss in the last 100 batches: {avg_loss}')
+  
+  def save_embeddings(self, epoch):
+    """ Save the embeddings of the model. The file should be named
+    'embeddings_{run_id}_{epoch}'. """
+    file = f'embeddings_{self.run_id}_{epoch}.vec'
+    # TODO: save embeddings
+
+
+def init_training(run_id, vocab_file, data_file, neg_samples, window,
+    batch_size, n_dims):
+  """ Configure logging, log the parameters of this training procedure and
+  initialize training. """
+  logging.basicConfig(
+    filename=f'logs/training_{run_id}.log',
+    level=logging.INFO
+  )
+  logging.info('Training embeddings with the following parameters:')
+  logging.info(f'Vocab file: {vocab_file}')
+  logging.info(f'Data file: {data_file}')
+  logging.info(f'No. of negative samples: {neg_samples}')
+  logging.info(f'No. of context words at each side: {window}')
+  logging.info(f'Batch size: {batch_size}')
+  logging.info(f'No. of dimensions of the embeddings: {n_dims}')
+  dataset = Dataset( vocab_file, data_file, k=neg_samples, w=window)
+  logging.info(f'Dataset has {dataset.vocab.n_words} words\n\n')
   loader = DataLoader(dataset, batch_size=batch_size)
-  for sample in loader:
-    out = model.forward(*sample)
-    print(out.size())
+  model = Skipgram(dataset.vocab.n_words, n_dims)
+  trainer = ModelTrainer(run_id, model, loader)
+  trainer.train()
 
 
 if __name__ == '__main__':
-  dataset = Dataset(
-    'tests/data/full/vocab.json',
-    'tests/data/full/data.txt',
-    k=2,
-    w=1
-  )
-  n_words = dataset.vocab.n_words
-  model = Skipgram(n_words, 3)
-  train(model, dataset, batch_size=4)
+  run_id = int(time())  # ID of this training run
+  vocab_file = 'tests/data/full/vocab.json'
+  data_file = 'tests/data/full/data.txt'
+  neg_samples = 2
+  window = 1
+  batch_size = 4
+  n_dims = 3
+  init_training(vocab_file, data_file, neg_samples, window, batch_size, n_dims)
