@@ -29,6 +29,24 @@ class Dataset(IterableDataset):
     self.discard_t = t
     self.get_sentence()
   
+  def __len__(self):
+    """ Return the number of words in the vocabulary. """
+    return self.vocab.n_words
+
+  
+  def __iter__(self):
+    """ Iterate over the samples. Negative samples are drawn for all pairs that
+    include the same center word. """
+    while self.sentence is not None:
+      neg_samples = self.sample(
+        [self.center.vocab_idx] + [c.vocab_idx for c in self.context]
+      )
+      for c in self.context:
+        this = neg_samples[:self.n_neg]
+        neg_samples = neg_samples[self.n_neg:]
+        yield (self.center.vocab_idx, c.vocab_idx, LongTensor(this))
+      self.step()
+
   def get_sentence(self):
     """ Read a line from the file and store its words as a list. Set the index
     of the current center word to zero. """
@@ -46,17 +64,6 @@ class Dataset(IterableDataset):
     """ Return a Word object for the idx-th word of the sentence. """
     vocab_idx = self.vocab.get_idx(sentence[idx])
     return Word(sentence[idx], idx, vocab_idx)
-  
-  def __iter__(self):
-    while self.sentence is not None:
-      neg_samples = self.sample(
-        [self.center.vocab_idx] + [c.vocab_idx for c in self.context]
-      )
-      for c in self.context:
-        this = neg_samples[:self.n_neg]
-        neg_samples = neg_samples[self.n_neg:]
-        yield (self.center.vocab_idx, c.vocab_idx, LongTensor(this))
-      self.step()
   
   def step(self):
     """ Move the center word to the left if possible and update the context.
