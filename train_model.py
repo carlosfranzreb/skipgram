@@ -46,7 +46,8 @@ class ModelTrainer:
   def log_loss(self, epoch=-1):
     """ If epoch=-1: log avg. loss of the last 100 batches. Before resetting
     the cnt and current_loss, add them to the totals for the epoch.
-    Else: epoch has ended - log its avg. loss and set all counters to zero. """
+    Else: epoch has ended - log its avg. loss, set all counters to zero
+    and call save_embeddings(). """
     self.epoch_loss += self.current_loss
     self.epoch_cnt += self.cnt
     if epoch > 0:
@@ -54,6 +55,7 @@ class ModelTrainer:
       logging.info(f'Avg. loss of epoch {epoch}: {avg_loss}')
       self.epoch_loss = 0
       self.epoch_cnt = 0
+      self.save_embeddings(epoch)
     else:
       avg_loss = self.current_loss / self.cnt
       logging.info(f'Avg. loss in the last 100 batches: {avg_loss}')
