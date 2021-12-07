@@ -8,7 +8,6 @@ import json
 
 import torch
 from torch.utils.data import DataLoader
-from torch.optim import SparseAdam
 from torch.nn.utils import clip_grad_norm_
 
 from load_data import Dataset
@@ -26,7 +25,7 @@ class ModelTrainer:
     self.dataset = dataset
 
   def train(self, batch_size=32, n_epochs=5, lr=.002):
-    optimizer = SparseAdam(self.model.parameters(), lr=lr)
+    optimizer = torch.optim.Adam(self.model.parameters(), lr=lr)
     for epoch in range(n_epochs+1):
       loader = DataLoader(self.dataset, batch_size=batch_size)
       self.cnt, self.current_loss = 0, 0  # for last 100 batches
