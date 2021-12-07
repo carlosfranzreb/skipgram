@@ -26,11 +26,11 @@ class ModelTrainer:
 
   def train(self, batch_size=32, n_epochs=5, lr=.002):
     optimizer = torch.optim.Adam(self.model.parameters(), lr=lr)
-    for epoch in range(n_epochs+1):
+    for epoch in range(1, n_epochs+1):
       loader = DataLoader(self.dataset, batch_size=batch_size)
       self.cnt, self.current_loss = 0, 0  # for last 100 batches
       self.epoch_cnt, self.epoch_loss = 0, 0  # for epoch
-      logging.info(f'Starting epoch {epoch+1}')
+      logging.info(f'Starting epoch {epoch}')
       for batch in loader:
         optimizer.zero_grad()
         loss = self.model(*batch)
@@ -41,19 +41,24 @@ class ModelTrainer:
         self.current_loss += loss
         if self.cnt % 100 == 0:
           self.log_loss()
-      avg_loss = self.epoch_loss / self.epoch_cnt
-      logging.info(f'Avg. loss of epoch {n_epochs+1}: {avg_loss}')
-      self.save_embeddings()
+      self.log_loss(epoch=epoch)
   
-  def log_loss(self):
-    """ Log avg. loss of the last 100 batches. Before resetting the cnt and
-    current_loss, add them to the totals for the epoch. """
-    avg_loss = self.current_loss / self.cnt
+  def log_loss(self, epoch=-1):
+    """ If epoch=-1: log avg. loss of the last 100 batches. Before resetting
+    the cnt and current_loss, add them to the totals for the epoch.
+    Else: epoch has ended - log its avg. loss and set all counters to zero. """
     self.epoch_loss += self.current_loss
     self.epoch_cnt += self.cnt
+    if epoch > 0:
+      avg_loss = self.epoch_loss / self.epoch_cnt
+      logging.info(f'Avg. loss of epoch {epoch}: {avg_loss}')
+      self.epoch_loss = 0
+      self.epoch_cnt = 0
+    else:
+      avg_loss = self.current_loss / self.cnt
+      logging.info(f'Avg. loss in the last 100 batches: {avg_loss}')
     self.cnt = 0
     self.current_loss = 0
-    logging.info(f'Avg. loss in the last 100 batches: {avg_loss}')
   
   def save_embeddings(self, epoch):
     """ Save the embeddings of the model as a dict with the words as keys and
