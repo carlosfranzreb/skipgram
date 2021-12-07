@@ -69,7 +69,7 @@ class ModelTrainer:
     'epoch_{epoch}', in the 'run_id' folder. """
     folder = f'embeddings/{self.run_id}'
     if not os.path.exists(folder):
-      os.makedir(folder)
+      os.mkdir(folder)
     if not os.path.exists(f'{folder}/entries.json'):
       json.dump(self.dataset.vocab.entries, open(f'{folder}/entries.json', 'w'))
     torch.save(self.model.state_dict(), f'{folder}/epoch_{epoch}.pt')
