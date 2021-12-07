@@ -17,6 +17,8 @@ class Skipgram(nn.Module):
     self.n_dims = n_dims
     self.input_vectors = nn.Embedding(n_words, n_dims)
     self.output_vectors = nn.Embedding(n_words, n_dims)
+    self.input_vectors.weight.data.uniform_(-1, 1)
+    self.output_vectors.weight.data.uniform_(-1, 1)
 
   def forward(self, input_idx, output_idx, neg_idx):
     """ Computes the forward pass.
