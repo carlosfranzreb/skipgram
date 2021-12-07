@@ -20,8 +20,7 @@ class Dataset(IterableDataset):
     n_neg (int): no. of negative samples.
     window (int): no. of words (forwards and backwards) that form the context
     of a center word. They must belong to the same sentence as the center word.
-    discard_t (float): threshold used to subsample frequent words.
-    """
+    discard_t (float): threshold used to subsample frequent words. """
     self.vocab = Vocab(vocab_file)
     self.data = open(data_file, encoding='utf-8')
     self.n_neg = k
@@ -32,7 +31,6 @@ class Dataset(IterableDataset):
   def __len__(self):
     """ Return the number of words in the vocabulary. """
     return self.vocab.n_words
-
   
   def __iter__(self):
     """ Iterate over the samples. Negative samples are drawn for all pairs that
