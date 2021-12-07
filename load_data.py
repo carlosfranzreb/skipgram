@@ -33,6 +33,10 @@ class Dataset(IterableDataset):
     return self.vocab.n_words
   
   def __iter__(self):
+    """ Return the iterator. """
+    return self
+
+  def __next__(self):
     """ Iterate over the samples. Negative samples are drawn for all pairs that
     include the same center word. """
     while self.sentence is not None:
