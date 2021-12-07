@@ -84,10 +84,9 @@ def init_training(run_id, vocab_file, data_file, neg_samples, window,
   logging.info(f'No. of dimensions of the embeddings: {n_dims}')
   dataset = Dataset( vocab_file, data_file, k=neg_samples, w=window)
   logging.info(f'Dataset has {dataset.vocab.n_words} words\n\n')
-  loader = DataLoader(dataset, batch_size=batch_size)
   model = Skipgram(dataset.vocab.n_words, n_dims)
-  trainer = ModelTrainer(run_id, model, loader)
-  trainer.train()
+  trainer = ModelTrainer(run_id, model, dataset)
+  trainer.train(batch_size)
 
 
 if __name__ == '__main__':
@@ -98,4 +97,5 @@ if __name__ == '__main__':
   window = 1
   batch_size = 4
   n_dims = 3
-  init_training(vocab_file, data_file, neg_samples, window, batch_size, n_dims)
+  init_training(run_id, vocab_file, data_file, neg_samples, window,
+    batch_size, n_dims)
