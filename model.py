@@ -33,4 +33,4 @@ class Skipgram(nn.Module):
     neg_vecs = -self.output_vectors(neg_idx).transpose(1, 2)
     prob = torch.bmm(in_vecs, out_vecs).squeeze()
     noise = torch.bmm(in_vecs, neg_vecs).squeeze()
-    return F.logsigmoid(prob) + F.logsigmoid(noise).sum(dim=1)
+    return torch.mean(F.logsigmoid(prob) + F.logsigmoid(noise).sum(dim=1))
