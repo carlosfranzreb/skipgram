@@ -31,6 +31,9 @@ class Skipgram(nn.Module):
     in_vecs = self.input_vectors(input_idx).unsqueeze(1)
     out_vecs = self.output_vectors(output_idx).unsqueeze(2)
     neg_vecs = -self.output_vectors(neg_idx).transpose(1, 2)
-    prob = torch.bmm(in_vecs, out_vecs).squeeze()
-    noise = torch.bmm(in_vecs, neg_vecs).squeeze()
-    return torch.mean(F.logsigmoid(prob) + F.logsigmoid(noise).sum(dim=1))
+    prob = F.logsigmoid(torch.bmm(in_vecs, out_vecs).squeeze())
+    noise = F.logsigmoid(torch.bmm(in_vecs, neg_vecs).squeeze())
+    if noise.ndim == 1:  # there is only one sample in the batch
+      return prob + noise.sum()
+    else:
+      return torch.mean(prob + noise.sum(dim=1))
