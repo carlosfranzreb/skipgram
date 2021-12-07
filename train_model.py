@@ -23,6 +23,8 @@ class ModelTrainer:
     self.run_id = run_id
     self.model = model
     self.dataset = dataset
+    self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    self.model.to(self.device)
 
   def train(self, batch_size=32, n_epochs=5, lr=.002):
     optimizer = torch.optim.Adam(self.model.parameters(), lr=lr)
@@ -33,7 +35,7 @@ class ModelTrainer:
       logging.info(f'Starting epoch {epoch}')
       for batch in loader:
         optimizer.zero_grad()
-        loss = self.model(*batch)
+        loss = self.model(*[t.to(self.device) for t in batch])
         loss.backward()
         clip_grad_norm_(self.model.parameters(), max_norm=5)
         optimizer.step()
