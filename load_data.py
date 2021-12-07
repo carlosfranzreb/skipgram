@@ -21,6 +21,7 @@ class Dataset(IterableDataset):
     window (int): no. of words (forwards and backwards) that form the context
     of a center word. They must belong to the same sentence as the center word.
     discard_t (float): threshold used to subsample frequent words. """
+    self.data_file = data_file
     self.vocab = Vocab(vocab_file)
     self.data = open(data_file, encoding='utf-8')
     self.n_neg = k
@@ -95,3 +96,8 @@ class Dataset(IterableDataset):
     list 'exclude'. The resulting indices are the negative samples. """
     population = set(range(self.vocab.n_words)) - set(exclude)
     return sample(population, self.n_neg * self.window * 2)
+  
+  def reset(self):
+    """ Reset the dataset. """
+    self.data = open(self.data_file, encoding='utf-8')
+    self.get_sentence()

@@ -42,6 +42,7 @@ class ModelTrainer:
         if self.cnt % 100 == 0:
           self.log_loss()
       self.log_loss(epoch=epoch)
+      self.dataset.reset()
   
   def log_loss(self, epoch=-1):
     """ If epoch=-1: log avg. loss of the last 100 batches. Before resetting
