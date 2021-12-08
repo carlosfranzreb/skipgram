@@ -35,12 +35,12 @@ class ModelTrainer:
       logging.info(f'Starting epoch {epoch}')
       for batch in loader:
         optimizer.zero_grad()
-        loss = self.model(*[t.to(self.device) for t in batch])
+        loss = -self.model(*[t.to(self.device) for t in batch])
         loss.backward()
         clip_grad_norm_(self.model.parameters(), max_norm=5)
         optimizer.step()
         self.cnt += 1
-        self.current_loss += loss
+        self.current_loss -= loss
         if self.cnt % 100 == 0:
           self.log_loss()
       self.log_loss(epoch=epoch)
@@ -51,7 +51,7 @@ class ModelTrainer:
     the cnt and current_loss, add them to the totals for the epoch.
     Else: epoch has ended - log its avg. loss, set all counters to zero
     and call save_embeddings(). """
-    self.epoch_loss += self.current_loss
+    self.epoch_loss -= self.current_loss
     self.epoch_cnt += self.cnt
     if epoch > 0:
       avg_loss = self.epoch_loss / self.epoch_cnt
@@ -96,7 +96,7 @@ def init_training(run_id, vocab_file, data_file, neg_samples, window,
   logging.info(f'Dataset has {dataset.vocab.n_words} words\n\n')
   model = Skipgram(dataset.vocab.n_words, n_dims)
   trainer = ModelTrainer(run_id, model, dataset)
-  trainer.train(batch_size)
+  trainer.train(batch_size, n_epochs=500)
 
 
 if __name__ == '__main__':
