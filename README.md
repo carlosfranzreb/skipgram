@@ -26,7 +26,7 @@ The Dataset (see `load_data.py`) samples _k_ negative samples for each pair of c
 
 Words are sampled using the unigram distribution, as this is the best performing distribution according to the authors. This is basically a weighted uniform distribution, where the frequencies of the words are the weights.
 
-The authors state that the unigram distribution raised to three quarters perform best. This means that the counts of the words are raised to 0.75 when computing the frequencies. This increases the frequencies of words that appear less in the corpus. Given a dictionary with the words as keys and their counts as values, you can compute frequencies raised to any power with the script `compute_frequencies.py` (TODO).
+The authors state that the unigram distribution raised to three quarters perform best. This means that the counts of the words are raised to 0.75 when computing the frequencies. This increases the frequencies of words that appear less in the corpus. Given a dictionary with the words as keys and their counts as values, you can compute frequencies raised to any power with the script `compute_frequencies.py`.
 
 ## The data
 
