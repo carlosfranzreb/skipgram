@@ -2,7 +2,7 @@
 here. This class is an argument for PyTorch's DataLoader. """
 
 
-from random import random, sample
+from random import random, choices
 
 from torch.utils.data import IterableDataset
 from torch import LongTensor
@@ -85,7 +85,7 @@ class Dataset(IterableDataset):
   def discard(self, word):
     """ Discard sample with a probability 1 - sqrt(t/f(w)), where t is a
     threshold defined in init and f(w) is the frequency of the word w. """
-    freq = self.vocab.get_freq(word)
+    freq = self.vocab.get_word_freq(word)
     prob = 1 - (self.discard_t/freq)**.5
     if random() > prob:
       return True
@@ -93,9 +93,15 @@ class Dataset(IterableDataset):
   
   def sample(self, exclude):
     """ Sample 'n_neg' indices from the vocab. Exclude those present in the
-    list 'exclude'. The resulting indices are the negative samples. """
-    population = set(range(self.vocab.n_words)) - set(exclude)
-    return sample(population, self.n_neg * self.window * 2)
+    list 'exclude', which are the context words. The resulting indices are the
+    negative samples. the sampling functions follows the unigram distribution,
+    which is a weighted uniform distribution with the frequencies of the words
+    as weights. 'choices' samples with replacement. """
+    population = list(set(range(self.vocab.n_words)) - set(exclude))
+    freqs = [self.vocab.get_idx_freq(i) for i in population]
+    if len(population) > 0:
+      return choices(population, freqs, k=self.n_neg*self.window*2)
+    return []
   
   def reset(self):
     """ Reset the dataset. """

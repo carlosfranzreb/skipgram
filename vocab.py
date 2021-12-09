@@ -11,7 +11,7 @@ class Vocab:
     frequencies in the data as values. The index of a word is its position
     in the dictionary. """
     self.vocab = json.load(open(vocab_file))
-    self.entries = list(self.vocab.keys())
+    self.entries = list(self.vocab.keys())  # list of words in the vocabulary
     self.n_words = len(self.entries)  # number of words in the vocabulary
   
   def get_idx(self, word):
@@ -22,6 +22,11 @@ class Vocab:
     """ Return the word in the vocabulary at the given index. """
     return self.entries[idx]
   
-  def get_freq(self, word):
+  def get_idx_freq(self, idx):
+    """ Return the frequency of the word in the vocabulary at the given
+    index. """
+    return self.vocab[self.get_word(idx)]
+  
+  def get_word_freq(self, word):
     """ Return the frequency of the given word. """
     return self.vocab[word]
