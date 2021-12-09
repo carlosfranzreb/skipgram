@@ -28,3 +28,10 @@ The model only considers one context word for each center word. Usually you will
 Two data files are required. One containing the terms of the vocabulary, with a term per line, and another containing the text data, with a sentence per line. Only words present in the vocabulary can appear in the text data.
 
 Usually, you will want the data to be already tokenized and lemmatized. This can be achieved by running the script `process_data.py` (TODO).
+
+
+## The results
+
+After running the `train_model.py` script, the state of the model will be stored in the `embeddings` folder, under the timestamp when the training started. The avg. score of each epoch, as well as from every 100 batches is logged in the file named with the same timestamp used to name the folder where the model is stored.
+
+You can retrieve the embeddings with the script `get_embeddings.py`. The embeddings will be stored as a dictionary, with the words as keys and their vector representations as values.
