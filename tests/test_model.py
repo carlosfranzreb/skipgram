@@ -24,7 +24,7 @@ def test_forward():
   )
   prob = F.logsigmoid(torch.FloatTensor([1,1]))
   noise = F.logsigmoid(-torch.eye(2, dtype=torch.float)).sum(dim=1)
-  assert torch.all(out == prob + noise)
+  assert torch.all(out == torch.mean(prob + noise))
 
 
 def test_more_noise():
@@ -43,4 +43,4 @@ def test_more_noise():
   )
   prob = F.logsigmoid(torch.FloatTensor([3,12]))
   noise = F.logsigmoid(-torch.FloatTensor([[4,3,0], [6,8,12]])).sum(dim=1)
-  assert torch.all(out == prob + noise)
+  assert torch.all(out == torch.mean(prob + noise))
