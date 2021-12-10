@@ -1,5 +1,5 @@
-""" Store the embeddings as a dictionary, with the word as the key and its
-corresponding vector representation as the value. """
+""" Functions that may optionally be used for tasks surrounding the model
+and its training. """
 
 
 import json
@@ -26,9 +26,14 @@ def get_embeddings(timestamp, epoch, n_dims, dump_file):
   json.dump(vecs, open(dump_file, 'w'))
 
 
-if __name__ == '__main__':
-  timestamp = 1638959563
-  epoch = 500
-  n_dims = 3
-  dump_file = 'full_data_vecs.json'
-  get_embeddings(timestamp, epoch, n_dims, dump_file)
+def compute_freqs(count_file, dump_file, power=.75):
+  """Compute the frequencies of the counts raised to the given power. 
+  count_file (str): file with the dictionary with words and their counts.
+  dump_file (str): file where the result should be dumped. 
+  power (float): value to which the counts should be raised before computing
+  the frequencies. The default value is the recommendation of the authors. """
+  vocab = json.load(open(count_file))
+  vocab = {word: cnt**power for word, cnt in vocab.items()}
+  total = sum(vocab.values())
+  vocab = {word: cnt/total for word, cnt in vocab.items()}
+  json.dump(vocab, open(dump_file, 'w'))
