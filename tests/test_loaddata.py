@@ -3,7 +3,7 @@
 
 import json
 
-from load_data import Dataset
+from skipgram.load_data import Dataset
 
 
 def test_full():

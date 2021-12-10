@@ -1,0 +1,8 @@
+LICENSE
+README.md
+pyproject.toml
+setup.cfg
+skipgram/skipgram_carlosfranzreb.egg-info/PKG-INFO
+skipgram/skipgram_carlosfranzreb.egg-info/SOURCES.txt
+skipgram/skipgram_carlosfranzreb.egg-info/dependency_links.txt
+skipgram/skipgram_carlosfranzreb.egg-info/top_level.txt

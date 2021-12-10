@@ -7,8 +7,8 @@ from random import random, choices
 from torch.utils.data import IterableDataset
 from torch import LongTensor
 
-from vocab import Vocab
-from word import Word
+from skipgram.vocab import Vocab
+from skipgram.word import Word
 
 
 class Dataset(IterableDataset):

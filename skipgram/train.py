@@ -10,8 +10,8 @@ import torch
 from torch.utils.data import DataLoader
 from torch.nn.utils import clip_grad_norm_
 
-from load_data import Dataset
-from model import Skipgram
+from skipgram.load_data import Dataset
+from skipgram.model import Skipgram
 
 
 class ModelTrainer:
@@ -26,7 +26,7 @@ class ModelTrainer:
     self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     self.model.to(self.device)
 
-  def train(self, batch_size=32, n_epochs=5, lr=.002):
+  def train(self, batch_size, n_epochs, lr):
     optimizer = torch.optim.Adam(self.model.parameters(), lr=lr)
     for epoch in range(1, n_epochs+1):
       loader = DataLoader(self.dataset, batch_size=batch_size)
@@ -69,7 +69,7 @@ class ModelTrainer:
     """ Save the embeddings of the model as a dict with the words as keys and
     the embeddings as values. The file should be named
     'epoch_{epoch}', in the 'run_id' folder. """
-    folder = f'embeddings/{self.run_id}'
+    folder = f'skipgram/embeddings/{self.run_id}'
     if not os.path.exists(folder):
       os.mkdir(folder)
     if not os.path.exists(f'{folder}/entries.json'):
@@ -78,13 +78,9 @@ class ModelTrainer:
       
 
 def init_training(run_id, vocab_file, data_file, neg_samples, window,
-    batch_size, n_dims):
+    n_dims, batch_size=32, n_epochs=5, lr=.002):
   """ Configure logging, log the parameters of this training procedure and
   initialize training. """
-  logging.basicConfig(
-    filename=f'logs/training_{run_id}.log',
-    level=logging.INFO
-  )
   logging.info('Training embeddings with the following parameters:')
   logging.info(f'Vocab file: {vocab_file}')
   logging.info(f'Data file: {data_file}')
@@ -96,16 +92,4 @@ def init_training(run_id, vocab_file, data_file, neg_samples, window,
   logging.info(f'Dataset has {dataset.vocab.n_words} words\n\n')
   model = Skipgram(dataset.vocab.n_words, n_dims)
   trainer = ModelTrainer(run_id, model, dataset)
-  trainer.train(batch_size, n_epochs=500)
-
-
-if __name__ == '__main__':
-  run_id = int(time())  # ID of this training run
-  vocab_file = 'tests/data/full/vocab.json'
-  data_file = 'tests/data/full/data.txt'
-  neg_samples = 2
-  window = 1
-  batch_size = 4
-  n_dims = 3
-  init_training(run_id, vocab_file, data_file, neg_samples, window,
-    batch_size, n_dims)
+  trainer.train(batch_size, n_epochs, lr)

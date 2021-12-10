@@ -5,7 +5,7 @@ corresponding vector representation as the value. """
 import json
 import torch
 
-from model import Skipgram
+from skipgram.model import Skipgram
 
 
 def get_embeddings(timestamp, epoch, n_dims, dump_file):
@@ -17,9 +17,10 @@ def get_embeddings(timestamp, epoch, n_dims, dump_file):
   epoch (int): epoch after which we want to retrieve the embeddings.
   dump_file (str): desired name for the file in which the results are stored.
   """
-  entries = json.load(open(f'embeddings/{timestamp}/entries.json'))
+  folder = f'skipgram/embeddings/{timestamp}'
+  entries = json.load(open(f'{folder}/entries.json'))
   model = Skipgram(len(entries), n_dims)
-  model.load_state_dict(torch.load(f'embeddings/{timestamp}/epoch_{epoch}.pt'))
+  model.load_state_dict(torch.load(f'{folder}/epoch_{epoch}.pt'))
   vecs = {entries[i]: model.input_vectors(torch.LongTensor([i])).tolist()[0] 
       for i in range(len(entries))}
   json.dump(vecs, open(dump_file, 'w'))
