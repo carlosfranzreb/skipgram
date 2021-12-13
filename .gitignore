@@ -2,3 +2,4 @@
 skipgram/embeddings/*
 !.gitkeep
 *.log
+skipgram.egg-info
