@@ -39,3 +39,8 @@ Usually, you will want the data to be already tokenized and lemmatized. This can
 After running the `train_model.py` script, the state of the model will be stored in the `embeddings` folder, under the timestamp when the training started. The avg. score of each epoch, as well as from every 100 batches is logged in the file named with the same timestamp used to name the folder where the model is stored.
 
 You can retrieve the embeddings with the script `get_embeddings.py`. The embeddings will be stored as a dictionary, with the words as keys and their vector representations as values.
+
+
+## Installing the package
+
+You can install this module as a package by running the command `python setup.py install`. You can then access it from other projects by importing it (`import skipgram`).
