@@ -4,3 +4,4 @@ skipgram/embeddings/*
 *.log
 skipgram.egg-info
 dist
+build
