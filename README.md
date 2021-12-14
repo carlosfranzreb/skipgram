@@ -43,4 +43,7 @@ You can retrieve the embeddings with the script `get_embeddings.py`. The embeddi
 
 ## Installing the package
 
-You can install this module as a package by running the command `python setup.py install`. You can then access it from other projects by importing it (`import skipgram`).
+1. Install the EGG file by running the command `python setup.py install`.
+2. Move to the `dist`folder and run the command `pip install skipgram-0.0.1-py3.7.egg` to install the module.
+    * You may need to change the Python version in the name of the EGG file.
+3. You can then access the module from other projects by importing it (`import skipgram`).
