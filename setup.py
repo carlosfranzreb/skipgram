@@ -21,6 +21,7 @@ setuptools.setup(
       "Operating System :: OS Independent",
   ],
   package_dir={"": "skipgram"},
-  packages=setuptools.find_packages(where="skipgram"),
+  # packages=setuptools.find_packages(where="skipgram"),
   python_requires=">=3.6",
+  py_modules=['load_data', 'model', 'train', 'utils', 'word', 'vocab']
 )

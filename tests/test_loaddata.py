@@ -14,7 +14,7 @@ def test_full():
     'tests/data/full/data.txt',
     k=0
   )
-  results = json.load(open('tests/data/full/results.json'))
+  results = json.load(open('tests/data/full/results.json', encoding='utf-8'))
   for x, y, _ in dataset:
     assert str((x, y)) == results.pop(0)
 
@@ -27,7 +27,7 @@ def test_long():
     w=3,
     k=0
   )
-  results = json.load(open('tests/data/long/results.json'))
+  results = json.load(open('tests/data/long/results.json', encoding='utf-8'))
   for x, y, _ in dataset:
     assert str((x, y)) == results.pop(0)
 

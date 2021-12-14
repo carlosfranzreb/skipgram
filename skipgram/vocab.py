@@ -10,7 +10,7 @@ class Vocab:
     """ The vocabulary is an ordered dict with the words as keys and their
     frequencies in the data as values. The index of a word is its position
     in the dictionary. """
-    self.vocab = json.load(open(vocab_file))
+    self.vocab = json.load(open(vocab_file, encoding='utf-8'))
     self.entries = list(self.vocab.keys())  # list of words in the vocabulary
     self.n_words = len(self.entries)  # number of words in the vocabulary
   

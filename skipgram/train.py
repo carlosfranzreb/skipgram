@@ -73,7 +73,9 @@ class ModelTrainer:
     if not os.path.exists(folder):
       os.mkdir(folder)
     if not os.path.exists(f'{folder}/entries.json'):
-      json.dump(self.dataset.vocab.entries, open(f'{folder}/entries.json', 'w'))
+      json.dump(self.dataset.vocab.entries, open(
+        f'{folder}/entries.json', 'w', encoding='utf-8'
+      ))
     torch.save(self.model.state_dict(), f'{folder}/epoch_{epoch}.pt')
       
 

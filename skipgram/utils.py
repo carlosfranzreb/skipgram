@@ -18,12 +18,12 @@ def get_embeddings(timestamp, epoch, n_dims, dump_file):
   dump_file (str): desired name for the file in which the results are stored.
   """
   folder = f'skipgram/embeddings/{timestamp}'
-  entries = json.load(open(f'{folder}/entries.json'))
+  entries = json.load(open(f'{folder}/entries.json', encoding='utf-8'))
   model = Skipgram(len(entries), n_dims)
   model.load_state_dict(torch.load(f'{folder}/epoch_{epoch}.pt'))
   vecs = {entries[i]: model.input_vectors(torch.LongTensor([i])).tolist()[0] 
       for i in range(len(entries))}
-  json.dump(vecs, open(dump_file, 'w'))
+  json.dump(vecs, open(dump_file, 'w', encoding='utf-8'))
 
 
 def compute_freqs(count_file, dump_file, power=.75):
@@ -32,8 +32,8 @@ def compute_freqs(count_file, dump_file, power=.75):
   dump_file (str): file where the result should be dumped. 
   power (float): value to which the counts should be raised before computing
   the frequencies. The default value is the recommendation of the authors. """
-  vocab = json.load(open(count_file))
+  vocab = json.load(open(count_file, encoding='utf-8'))
   vocab = {word: cnt**power for word, cnt in vocab.items()}
   total = sum(vocab.values())
   vocab = {word: cnt/total for word, cnt in vocab.items()}
-  json.dump(vocab, open(dump_file, 'w'))
+  json.dump(vocab, open(dump_file, 'w', encoding='utf-8'))
